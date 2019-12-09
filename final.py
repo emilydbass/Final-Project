@@ -1,36 +1,30 @@
 import json
 import requests
 import sqlite3
+import http.client
 
-
-#jooble
-host = 'jooble.org/api'
-key = '59eb2b82-b173-4925-aff7-36c1b17fff46'
-
-
-
-#data usa
-api = 'https://datausa.io/api/data?drilldowns=State&measures=Population&year=latest'
 
 def get_usa_data():
 
     request_url = 'https://datausa.io/api/data?drilldowns=State&measures=Population&year=latest'
-
-    r = requests.get(request_url)
-    data = r.text
-    dict_list = json.loads(data) # decoding JSON file
-
+    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+    limits = 20
+    data = requests.get(request_url, headers = headers)
+    dict_list = json.loads(data.text) # decoding JSON file
     return(dict_list)
 
-def population_year():
+def get_job_data():
+    print('Testing job api ')
+    host = 'jooble.org'
+    key = '59eb2b82-b173-4925-aff7-36c1b17fff46'
+    connection = http.client.HTTPConnection(host)
+    headers = {"Content-type": "application/x-www-form-urlencoded"}
+    body = '{ "keywords": "it", "location": "Bern"}'
+    connection.request('POST','/api/' + key, body, headers)
+    response = connection.getresponse()
+    print(response.status, response.reason)
+    print(response.read())
 
-    data1 = get_usa_data()
-    return data1[1][0]['value']
-
-# MAKE JSON FILE W DATA
-# file1 = "USA.json"
-# file2 = "JOBS.json"
-#
 #
 # conn = sqlite3.connect('final.sqlite')
 # cur = conn.cursor()
@@ -65,9 +59,10 @@ def population_year():
 
 def main():
     # CO2 emission in the US in 2014 (tons per capita)
-    print("testing")
-    value1 = population_year()
-    print(value1)
+    print(get_usa_data())
+    print(get_job_data())
+    #value1 = population_year()
+    #print(value1)
 
 if __name__ == "__main__":
     main()
