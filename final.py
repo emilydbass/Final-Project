@@ -5,7 +5,6 @@ import sqlite3
 def get_state_data():
     request_url = 'https://datausa.io/api/data?drilldowns=State&measures=Population&year=latest'
     headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
-    limits = 20
     data = requests.get(request_url, headers = headers)
     dict_list = json.loads(data.text) # decoding JSON file
     return(dict_list)
@@ -45,44 +44,66 @@ cur.execute('DROP TABLE IF EXISTS UNEMPLOYED')
 cur.execute('CREATE TABLE UNEMPLOYED(year INTEGER, month TEXT, unemployed INTEGER)')
 
 
+
 state_data = get_state_data()
 def insert_states(state_data):
+    limit = 20
     for state in state_data['data']:
-        _name = state['State']
-        _population = state['Population']
-        cur.execute('INSERT INTO STATE (name, population) VALUES (?, ?)',
-                    (_name, _population))
-        conn.commit()
+        if limit != 0:
+            _name = state['State']
+            _population = state['Population']
+            cur.execute('INSERT INTO STATE (name, population) VALUES (?, ?)',
+                        (_name, _population))
+            conn.commit()
+            limit -= 1
+        else:
+            continue
+        
 
 county_data = get_county_data()
 def insert_counties(county_data):
+    limit = 20
     for county in county_data['data']:
-        _name = county['County']
-        _population = county['Population']
-        cur.execute('INSERT INTO COUNTY (name, population) VALUES (?, ?)',
-                    (_name, _population))
-        conn.commit()
+        if limit != 0:
+            _name = county['County']
+            _population = county['Population']
+            cur.execute('INSERT INTO COUNTY (name, population) VALUES (?, ?)',
+                        (_name, _population))
+            conn.commit()
+            limit -= 1
+        else: 
+            continue
 
 employ_data = get_employ_data()
 def insert_employment(employ_data):
+    limit = 20
     for item in employ_data['Results']['series'][0]['data']:
-        _year = item['year']
-        _employment = item['value']
-        _month = item['periodName']
-        cur.execute('INSERT INTO EMPLOYMENT (year, month, employment) VALUES (?, ?,?)',
-                    (_year, _month, _employment))
-        conn.commit()
+        if limit != 0:
+            _year = item['year']
+            _employment = item['value']
+            _month = item['periodName']
+            cur.execute('INSERT INTO EMPLOYMENT (year, month, employment) VALUES (?, ?,?)',
+                        (_year, _month, _employment))
+            conn.commit()
+            limit -= 1
+        else: 
+            continue
 
 
 unemployed_data = get_unemployed_data()
 def insert_unemployed(unemployed_data):
+    limit = 20
     for item in unemployed_data['Results']['series'][0]['data']:
-        _year = item['year']
-        _unemployed = item['value']
-        _month = item['periodName']
-        cur.execute('INSERT INTO UNEMPLOYED (year, month, unemployed) VALUES (?, ?,?)',
-                    (_year, _month, _unemployed))
-        conn.commit()
+        if limit != 0:
+            _year = item['year']
+            _unemployed = item['value']
+            _month = item['periodName']
+            cur.execute('INSERT INTO UNEMPLOYED (year, month, unemployed) VALUES (?, ?,?)',
+                        (_year, _month, _unemployed))
+            conn.commit()
+            limit -=1
+        else:
+            continue
 
 def commit():
     conn.commit()
