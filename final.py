@@ -1,6 +1,7 @@
 import json
 import requests
 import sqlite3
+import os
 
 def get_state_data():
     request_url = 'https://datausa.io/api/data?drilldowns=State&measures=Population&year=latest'
@@ -60,7 +61,6 @@ def insert_states(pos):
 
 state_start_pos = insert_states(state_start_pos)
 
-        
 
 county_data = get_county_data()
 county_cache = county_data['data']
@@ -111,8 +111,20 @@ unemployed_start_pos = insert_unemployed(unemployed_start_pos)
 def commit():
     conn.commit()
 
+
+def calc(filename):
+    full_path = os.path.join(os.path.dirname(__file__), filename)
+    file_obj = open(full_path, 'w')
+    file_obj.write('These are the calucations we did using our API data.')
+        # insert calculations
+    file_obj.close()
+
+def visualize():
+    pass
+
 def main():
     # CO2 emission in the US in 2014 (tons per capita)
+    calc('calc.txt')
     insert_states(state_data)
     insert_counties(county_data)
     insert_employment(employ_data)
