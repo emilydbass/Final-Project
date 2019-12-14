@@ -67,82 +67,94 @@ def insert_states(start_pos, end_pos):
 def call():
     start_pos = 0
     end_pos = 20
-    for i in range(3):
+    for i in range(2):
         insert_states(start_pos,end_pos)
+        #insert_counties(start_pos,end_pos)
         start_pos+= 20
         end_pos+= 20
 call()
-    
-
-
 
 county_data = get_county_data()
 county_cache = county_data['data']
 county_start_pos = 0
-def insert_counties(pos):
+
+def insert_counties(start_pos,end_pos):
     for ind in range(county_start_pos, county_start_pos+20):
         row = county_cache[ind]
         _name = row['County']
         _population = row['Population']
         cur.execute('INSERT INTO COUNTY (name, population) VALUES (?, ?)',(_name, _population))
         conn.commit()
-    new_pos = county_start_pos + 20
-    return new_pos
-
-county_start_pos = insert_counties(county_start_pos)
-
-employ_data = get_employ_data()
-employ_cache = employ_data['Results']['series'][0]['data']
-employ_start_pos = 0
-def insert_employment(pos):
-    for ind in range(employ_start_pos, employ_start_pos+20):
-        row = employ_cache[ind]
-        _year = row['year']
-        _employment = row['value']
-        _month = row['periodName']
-        cur.execute('INSERT INTO EMPLOYMENT (year, month, employment) VALUES (?, ?,?)', (_year, _month, _employment))
-        conn.commit()
-    new_pos = employ_start_pos + 20
-    return new_pos
-employ_start_pos = insert_employment(employ_start_pos)
-         
-
-unemployed_data = get_unemployed_data()
-unemployed_cache = unemployed_data['Results']['series'][0]['data']
-unemployed_start_pos = 0
-def insert_unemployed(pos):
-    for ind in range(unemployed_start_pos, unemployed_start_pos+20):
-        row = unemployed_cache[ind]
-        _year = row['year']
-        _unemployed = row['value']
-        _month = row['periodName']
-        cur.execute('INSERT INTO UNEMPLOYED (year, month, unemployed) VALUES (?, ?,?)', (_year, _month, _unemployed))
-        conn.commit()
-    new_pos = unemployed_start_pos + 20
-    return new_pos
-unemployed_start_pos = insert_unemployed(unemployed_start_pos)
-
-def commit():
-    conn.commit()
+    start_pos = end_pos
+    end_pos += 20
+    return start_pos, end_pos
 
 
-def calc(filename):
+#employ_data = get_employ_data()
+#employ_cache = employ_data['Results']['series'][0]['data']
+#employ_start_pos = 0
+
+
+#
+# def insert_employment(pos):
+#     for ind in range(employ_start_pos, employ_start_pos+20):
+#         row = employ_cache[ind]
+#         _year = row['year']
+#         _employment = row['value']
+#         _month = row['periodName']
+#         cur.execute('INSERT INTO EMPLOYMENT (year, month, employment) VALUES (?, ?,?)', (_year, _month, _employment))
+#         conn.commit()
+#     new_pos = employ_start_pos + 20
+#     return new_pos
+# employ_start_pos = insert_employment(employ_start_pos)
+#
+#
+# unemployed_data = get_unemployed_data()
+# unemployed_cache = unemployed_data['Results']['series'][0]['data']
+# unemployed_start_pos = 0
+# def insert_unemployed(pos):
+#     for ind in range(unemployed_start_pos, unemployed_start_pos+20):
+#         row = unemployed_cache[ind]
+#         _year = row['year']
+#         _unemployed = row['value']
+#         _month = row['periodName']
+#         cur.execute('INSERT INTO UNEMPLOYED (year, month, unemployed) VALUES (?, ?,?)', (_year, _month, _unemployed))
+#         conn.commit()
+#     new_pos = unemployed_start_pos + 20
+#     return new_pos
+# unemployed_start_pos = insert_unemployed(unemployed_start_pos)
+
+
+
+def calc(cur, conn,filename):
+    population_sum = 0
+    cur.execute('SELECT population FROM STATE')
+    for row in cur:
+        population_sum = population_sum + int(row[0])
+    average_pop = int((population_sum / 52))
     full_path = os.path.join(os.path.dirname(__file__), filename)
     file_obj = open(full_path, 'w')
-    file_obj.write('These are the calucations we did using our API data.')
+    file_obj.write('These are the calucations did using our API data.'+'\n')
+    file_obj.write('This is the average population of all 52 states in America: ') #not really its 40 for now.
+    file_obj.write(str(average_pop))
         # insert calculations
     file_obj.close()
+
 
 def visualize():
     pass
 
+
+def commit():
+    conn.commit()
+
 def main():
     # CO2 emission in the US in 2014 (tons per capita)
-    calc('calc.txt')
-    insert_states(state_data)
-    insert_counties(county_data)
-    insert_employment(employ_data)
-    insert_unemployed(unemployed_data)
+    calc(cur,conn,'calc.txt')
+    #insert_states(state_data)
+    #insert_counties(county_data)
+    #insert_employment(employ_data)
+   # insert_unemployed(unemployed_data)
     commit()
 
 

@@ -1,1 +1,2 @@
-These are the calucations we did using our API data.
+These are the calucations did using our API data.
+This is the average population of all 52 states in America: 4942551
