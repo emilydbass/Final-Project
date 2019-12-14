@@ -48,18 +48,32 @@ cur.execute('CREATE TABLE UNEMPLOYED(year INTEGER, month TEXT, unemployed INTEGE
 
 state_data = get_state_data()
 state_cache = state_data['data']
-state_start_pos = 0
-def insert_states(pos):
-    for ind in range(state_start_pos, state_start_pos+20):
-        row = state_cache[ind]
-        _name = row['State']
-        _population = row['Population']
-        cur.execute('INSERT INTO STATE (name, population) VALUES (?, ?)',(_name, _population))
-        conn.commit()
-    new_pos = state_start_pos + 20
-    return new_pos
 
-state_start_pos = insert_states(state_start_pos)
+def insert_states(start_pos, end_pos):
+    for ind in range(start_pos, end_pos):
+        if ind <= 52:
+            row = state_cache[ind]
+            _name = row['State']
+            _population = row['Population']
+            cur.execute('INSERT INTO STATE (name, population) VALUES (?, ?)',(_name, _population))
+            conn.commit()
+        else: 
+            continue
+    start_pos = end_pos
+    end_pos += 20
+    return start_pos, end_pos
+
+
+def call():
+    start_pos = 0
+    end_pos = 20
+    for i in range(3):
+        insert_states(start_pos,end_pos)
+        start_pos+= 20
+        end_pos+= 20
+call()
+    
+
 
 
 county_data = get_county_data()
