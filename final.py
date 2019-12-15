@@ -2,6 +2,7 @@ import json
 import requests
 import sqlite3
 import os
+import matplotlib
 import matplotlib.pyplot as plt
 
 def get_state_data():
@@ -134,7 +135,7 @@ def calc(cur, conn,filename):
 
     population_sum_county = 0
     cur.execute('SELECT population FROM COUNTY')
-    for row in cur: 
+    for row in cur:
         population_sum_county+= int(row[0])
     average_pop_county = int((population_sum_county/100))
 
@@ -162,19 +163,99 @@ def calc(cur, conn,filename):
     file_obj.write(str(average_employment) + '\n')
     file_obj.write('This is the average number of people who are reported as "unemployed" each month: ')
     file_obj.write(str(average_unemployment))
-    
-        # insert calculations
+
+    # insert calculations
     file_obj.close()
 
+def get_state_dict():
+    try:
+        conn = sqlite3.connect('final.sqlite')
+    except:
+        print("Error")
+    state_dict = {}
+    cur = conn.cursor()
+    cur.execute("SELECT name, population FROM STATE ")
+    rows = cur.fetchall()
+    for row in rows:
+        if row[0] not in state_dict:
+            state_dict[row[0]] = row[1]
+        else:
+            pass
+    conn.commit()
+    return state_dict
 
-def visualize_state():
-    pass
 
-def visualize_year_job_data():
-    pass
+def visualize_state(state_dict):
+    tup_list = []
+    for item in state_dict.keys():
+        tup_list.append(tuple([item,state_dict[item]]))
+    sorted_tup_list = sorted(tup_list, key = lambda x: x[0])
+    state_list = []
+    vals_list = []
+    for item in sorted_tup_list:
+        state_list.append(item[0])
+        vals_list.append(item[1])
+    plt.bar(state_list, vals_list, color = (0.1, 0.2, 0.3, 0.4), edgecolor = 'magenta')
+    plt.xlabel('State', fontsize=10)
+    plt.ylabel('Population', fontsize=10)
+    plt.title('State Populations in the United States')
+    plt.xticks(rotation=90)
+    plt.tight_layout()
+    plt.show()
+    return sorted_tup_list
 
 
-
+def job():
+    dictionary_of_employ = {}
+#   cur.execute('SELECT employment, month FROM EMPLOYMENT WHERE year = 2018')
+#   for row in cur:
+#       employment = row[0]
+#       month = row[1]
+#       if month not in dictionary_of_employ.keys():
+#           dictionary_of_employ[month] = employment
+    dictionary_of_unemploy = {}
+#   cur.execute('SELECT unemployed, month FROM UNEMPLOYED WHERE year = 2018')
+#   for row in cur:
+#       unemployed = row[0]
+#       month = row[1]
+#       if month not in dictionary_of_unemploy.keys():
+#           dictionary_of_unemploy[month] = unemployed
+#    
+    dictionary_of_emp_unemp = {}
+#
+#   cur.execute('SELECT Employment.employment, Unemployed.unemployed, Unemployed.month FROM Employment LEFT JOIN Unemployed on Employment.month = Unemployed.month WHERE year = 2018')
+#   for row in cur:
+#       employment = row[0]
+#       unemployed = row[1]
+#       month = row[2]
+#       if month not in dictionary_of_emp_unemp.keys():
+#           dictionary_of_emp_unemp[month] = (employment, unemployed)
+#     
+#   employment_list = []
+#   unemployment_list = []
+#
+#   for x in dictionary_of_emp_unemp:
+#       employment_list.append(x[1][0])
+#       unemployment_list.append(x[1][1])
+#
+#   fig, ax = plt.subplots()
+#   N = 12
+#   width = 0.35
+#   ind = np.arrange(N)
+#
+#   p1 = ax.bar(ind, employment_list, width, color="red")
+#   p2 = ax.bar(ind + width, unemployment_list, width, color='orange')
+#   ax.set_xticks(ind + width / 2)
+#   ax.set_xticklabels(('January', 'February', 'March', 'April', 'June', 'July', 'August', 'September', 'October', 'November', 'December'))
+#   ax.legend((p1[0], p2[0]), ('Employed', 'Unemployed'))
+#   ax.autoscale_view()
+#
+#   ax.set(xlabel='Months', ylabel='Number of People',
+#            title="Number of People Employed vs. Unemployed in 2018 by Month")
+#
+#   ax.grid()
+#   fig.savefig("Employvunemploy.png")
+#   plt.show()
 
 # def join():
 #     cur.execute('SELECT EMPLOYMENT.year FROM EMPLOYMENT LEFT JOIN UNEMPLOYED ON EMPLOYMENT.year = UNEMPLOYED.year')
@@ -186,7 +267,7 @@ def commit():
 def main():
     # CO2 emission in the US in 2014 (tons per capita)
     calc(cur,conn,'calc.txt')
-    visualize_state()
+    visualize_state(get_state_dict())
     #join()
     #insert_states(state_data)
     #insert_counties(county_data)
