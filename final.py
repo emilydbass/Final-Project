@@ -63,23 +63,11 @@ def insert_states(start_pos, end_pos):
     end_pos += 20
     return start_pos, end_pos
 
-
-def call():
-    start_pos = 0
-    end_pos = 20
-    for i in range(2):
-        insert_states(start_pos,end_pos)
-        #insert_counties(start_pos,end_pos)
-        start_pos+= 20
-        end_pos+= 20
-call()
-
 county_data = get_county_data()
 county_cache = county_data['data']
-county_start_pos = 0
 
 def insert_counties(start_pos,end_pos):
-    for ind in range(county_start_pos, county_start_pos+20):
+    for ind in range(start_pos, end_pos):
         row = county_cache[ind]
         _name = row['County']
         _population = row['Population']
@@ -89,6 +77,19 @@ def insert_counties(start_pos,end_pos):
     end_pos += 20
     return start_pos, end_pos
 
+
+def call():
+    start_pos = 0
+    end_pos = 20
+    for i in range(2):
+        insert_states(start_pos,end_pos)
+        start_pos+= 20
+        end_pos+= 20
+    for i in range(5):
+        insert_counties(start_pos, end_pos)
+        start_pos += 20
+        end_pos += 20
+call()
 
 #employ_data = get_employ_data()
 #employ_cache = employ_data['Results']['series'][0]['data']
@@ -132,11 +133,19 @@ def calc(cur, conn,filename):
     for row in cur:
         population_sum = population_sum + int(row[0])
     average_pop = int((population_sum / 52))
+    population_sum_county = 0
+    cur.execute('SELECT population FROM COUNTY')
+    for row in cur: 
+        population_sum_county+= int(row[0])
+    average_pop_county = int((population_sum_county/100))
     full_path = os.path.join(os.path.dirname(__file__), filename)
     file_obj = open(full_path, 'w')
-    file_obj.write('These are the calucations did using our API data.'+'\n')
+    file_obj.write('These are the calculations did using our API data.'+'\n')
     file_obj.write('This is the average population of all 52 states in America: ') #not really its 40 for now.
-    file_obj.write(str(average_pop))
+    file_obj.write(str(average_pop) + '\n')
+    file_obj.write('This is the average population of 100 counties in America: ')
+    file_obj.write(str(average_pop_county))
+
         # insert calculations
     file_obj.close()
 
