@@ -205,7 +205,12 @@ def visualize_state(state_dict):
     return sorted_tup_list
 
 
-def job():
+def get_job_dict():
+    try:
+        conn = sqlite3.connect('final.sqlite')
+    except:
+        print("Error")
+    """   
     dictionary_of_employ = {}
 #   cur.execute('SELECT employment, month FROM EMPLOYMENT WHERE year = 2018')
 #   for row in cur:
@@ -220,9 +225,10 @@ def job():
 #       month = row[1]
 #       if month not in dictionary_of_unemploy.keys():
 #           dictionary_of_unemploy[month] = unemployed
-#    
+#   """
+    cur = conn.cursor()
     dictionary_of_emp_unemp = {}
-#
+
 #   cur.execute('SELECT Employment.employment, Unemployed.unemployed, Unemployed.month FROM Employment LEFT JOIN Unemployed on Employment.month = Unemployed.month WHERE year = 2018')
 #   for row in cur:
 #       employment = row[0]
@@ -230,7 +236,10 @@ def job():
 #       month = row[2]
 #       if month not in dictionary_of_emp_unemp.keys():
 #           dictionary_of_emp_unemp[month] = (employment, unemployed)
-#     
+#   conn.commit()
+#   return dictionary_of_emp_unemp
+
+def visualize_employ_unemploy(dictionary_of_emp_unemp):
 #   employment_list = []
 #   unemployment_list = []
 #
