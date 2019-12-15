@@ -78,11 +78,46 @@ def insert_counties(start_pos,end_pos):
     return start_pos, end_pos
 
 
+employ_data = get_employ_data()
+employ_cache = employ_data['Results']['series'][0]['data']
+
+def insert_employment(start_pos, end_pos):
+    for ind in range(start_pos, end_pos):
+        row = employ_cache[ind]
+        _year = row['year']
+        _employment = row['value']
+        _month = row['periodName']
+        cur.execute('INSERT INTO EMPLOYMENT (year, month, employment) VALUES (?, ?,?)', (_year, _month, _employment))
+        conn.commit()
+    start_pos = end_pos
+    end_pos += 20
+    return start_pos, end_pos
+
+
+unemployed_data = get_unemployed_data()
+unemployed_cache = unemployed_data['Results']['series'][0]['data']
+
+def insert_unemployed(start_pos, end_pos):
+    for ind in range(start_pos, end_pos):
+        row = unemployed_cache[ind]
+        _year = row['year']
+        _unemployed = row['value']
+        _month = row['periodName']
+        cur.execute('INSERT INTO UNEMPLOYED (year, month, unemployed) VALUES (?, ?,?)', (_year, _month, _unemployed))
+        conn.commit()
+    start_pos = end_pos
+    end_pos += 20
+    return start_pos, end_pos
+
+
+
 def call():
     start_pos = 0
     end_pos = 20
     for i in range(2):
         insert_states(start_pos,end_pos)
+        insert_employment(start_pos, end_pos)
+        insert_unemployed(start_pos, end_pos)
         start_pos+= 20
         end_pos+= 20
     for i in range(5):
@@ -90,42 +125,6 @@ def call():
         start_pos += 20
         end_pos += 20
 call()
-
-#employ_data = get_employ_data()
-#employ_cache = employ_data['Results']['series'][0]['data']
-#employ_start_pos = 0
-
-
-#
-# def insert_employment(pos):
-#     for ind in range(employ_start_pos, employ_start_pos+20):
-#         row = employ_cache[ind]
-#         _year = row['year']
-#         _employment = row['value']
-#         _month = row['periodName']
-#         cur.execute('INSERT INTO EMPLOYMENT (year, month, employment) VALUES (?, ?,?)', (_year, _month, _employment))
-#         conn.commit()
-#     new_pos = employ_start_pos + 20
-#     return new_pos
-# employ_start_pos = insert_employment(employ_start_pos)
-#
-#
-# unemployed_data = get_unemployed_data()
-# unemployed_cache = unemployed_data['Results']['series'][0]['data']
-# unemployed_start_pos = 0
-# def insert_unemployed(pos):
-#     for ind in range(unemployed_start_pos, unemployed_start_pos+20):
-#         row = unemployed_cache[ind]
-#         _year = row['year']
-#         _unemployed = row['value']
-#         _month = row['periodName']
-#         cur.execute('INSERT INTO UNEMPLOYED (year, month, unemployed) VALUES (?, ?,?)', (_year, _month, _unemployed))
-#         conn.commit()
-#     new_pos = unemployed_start_pos + 20
-#     return new_pos
-# unemployed_start_pos = insert_unemployed(unemployed_start_pos)
-
-
 
 def calc(cur, conn,filename):
     population_sum = 0
