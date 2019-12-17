@@ -4,6 +4,7 @@ import sqlite3
 import os
 import matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
 
 def get_state_data():
     request_url = 'https://datausa.io/api/data?drilldowns=State&measures=Population&year=latest'
@@ -78,46 +79,48 @@ def insert_counties(start_pos,end_pos):
     end_pos += 13
     return start_pos, end_pos
 
-#
-# employ_data = get_employ_data()
-# employ_cache = employ_data['Results']['series'][0]['data']
-#
-# def insert_employment(start_pos, end_pos):
-#     for ind in range(start_pos, end_pos):
-#         row = employ_cache[ind]
-#         _year = row['year']
-#         _employment = row['value']
-#         _month = row['periodName']
-#         cur.execute('INSERT INTO EMPLOYMENT (year, month, employment) VALUES (?, ?,?)', (_year, _month, _employment))
-#         conn.commit()
-#     start_pos = end_pos
-#     end_pos += 13
-#     return start_pos, end_pos
-#
-#
-# unemployed_data = get_unemployed_data()
-# unemployed_cache = unemployed_data['Results']['series'][0]['data']
-#
-# def insert_unemployed(start_pos, end_pos):
-#     for ind in range(start_pos, end_pos):
-#         row = unemployed_cache[ind]
-#         _year = row['year']
-#         _unemployed = row['value']
-#         _month = row['periodName']
-#         cur.execute('INSERT INTO UNEMPLOYED (year, month, unemployed) VALUES (?, ?,?)', (_year, _month, _unemployed))
-#         conn.commit()
-#     start_pos = end_pos
-#     end_pos += 13
-#     return start_pos, end_pos
 
+employ_data = get_employ_data()
+employ_cache = employ_data['Results']['series'][0]['data']
+
+def insert_employment(start_pos, end_pos):
+    for ind in range(start_pos, end_pos):
+        row = employ_cache[ind]
+        _year = row['year']
+        _employment = row['value']
+        _month = row['periodName']
+        cur.execute('INSERT INTO EMPLOYMENT (year, month, employment) VALUES (?, ?,?)', (_year, _month, _employment))
+        conn.commit()
+    start_pos = end_pos
+    end_pos += 13
+    return start_pos, end_pos
+
+
+unemployed_data = get_unemployed_data()
+unemployed_cache = unemployed_data['Results']['series'][0]['data']
+
+def insert_unemployed(start_pos, end_pos):
+    for ind in range(start_pos, end_pos):
+        row = unemployed_cache[ind]
+        _year = row['year']
+        _unemployed = row['value']
+        _month = row['periodName']
+        cur.execute('INSERT INTO UNEMPLOYED (year, month, unemployed) VALUES (?, ?,?)', (_year, _month, _unemployed))
+        conn.commit()
+    start_pos = end_pos
+    end_pos += 13
+    return start_pos, end_pos
 
 def call():
     start_pos = 0
     end_pos = 13
     for i in range(4):
         insert_states(start_pos,end_pos)
-        # insert_employment(start_pos, end_pos)
-        # insert_unemployed(start_pos, end_pos)
+        start_pos+= 13
+        end_pos+= 13
+    for i in range(5):
+        insert_employment(start_pos, end_pos)
+        insert_unemployed(start_pos, end_pos)
         start_pos+= 13
         end_pos+= 13
     for i in range(10):
@@ -155,13 +158,13 @@ def calc(cur, conn,filename):
     full_path = os.path.join(os.path.dirname(__file__), filename)
     file_obj = open(full_path, 'w')
     file_obj.write('These are the calculations we did using our API data.'+'\n')
-    file_obj.write('This is the average population of all 52 states in America: ') #not really its 40 for now.
+    file_obj.write('We found the populations of all the states in america from our State data table and took that total and divided it by 52. This is the average population of all 52 states in America: ')
     file_obj.write(str(average_pop) + '\n')
-    file_obj.write('This is the average population of 100 counties in America: ')
+    file_obj.write('We found the populations from the Counties data table and totaled it, then divided it by 100. This is the average population of 100 counties in America: ')
     file_obj.write(str(average_pop_county)+'\n')
-    file_obj.write('This is the average number of people who are reported as "employed" each month: ')
+    file_obj.write('We found the number of empoloyed Americans each month from our Employment data table, then averaged this. This is the average number of people who are reported as "employed" each month: ')
     file_obj.write(str(average_employment) + '\n')
-    file_obj.write('This is the average number of people who are reported as "unemployed" each month: ')
+    file_obj.write('We found the number of unemployed Americans each month from our Unemployment data table, then found the average.This is the average number of people who are reported as "unemployed" each month: ')
     file_obj.write(str(average_unemployment))
 
     # insert calculations
@@ -207,72 +210,60 @@ def visualize_state(state_dict):
 
 def job():
     dictionary_of_employ = {}
-#   cur.execute('SELECT employment, month FROM EMPLOYMENT WHERE year = 2018')
-#   for row in cur:
-#       employment = row[0]
-#       month = row[1]
-#       if month not in dictionary_of_employ.keys():
-#           dictionary_of_employ[month] = employment
+    cur.execute('SELECT employment, month FROM EMPLOYMENT WHERE year = 2013')
+    for row in cur:
+        employment = row[0]
+        month = row[1]
+        if month not in dictionary_of_employ.keys():
+            dictionary_of_employ[month] = employment
     dictionary_of_unemploy = {}
-#   cur.execute('SELECT unemployed, month FROM UNEMPLOYED WHERE year = 2018')
-#   for row in cur:
-#       unemployed = row[0]
-#       month = row[1]
-#       if month not in dictionary_of_unemploy.keys():
-#           dictionary_of_unemploy[month] = unemployed
-#    
+    cur.execute('SELECT unemployed, month FROM UNEMPLOYED WHERE year = 2013')
+    for row in cur:
+        unemployed = row[0]
+        month = row[1]
+        if month not in dictionary_of_unemploy.keys():
+            dictionary_of_unemploy[month] = unemployed
     dictionary_of_emp_unemp = {}
-#
-#   cur.execute('SELECT Employment.employment, Unemployed.unemployed, Unemployed.month FROM Employment LEFT JOIN Unemployed on Employment.month = Unemployed.month WHERE year = 2018')
-#   for row in cur:
-#       employment = row[0]
-#       unemployed = row[1]
-#       month = row[2]
-#       if month not in dictionary_of_emp_unemp.keys():
-#           dictionary_of_emp_unemp[month] = (employment, unemployed)
-#     
-#   employment_list = []
-#   unemployment_list = []
-#
-#   for x in dictionary_of_emp_unemp:
-#       employment_list.append(x[1][0])
-#       unemployment_list.append(x[1][1])
-#
-#   fig, ax = plt.subplots()
-#   N = 12
-#   width = 0.35
-#   ind = np.arrange(N)
-#
-#   p1 = ax.bar(ind, employment_list, width, color="red")
-#   p2 = ax.bar(ind + width, unemployment_list, width, color='orange')
-#   ax.set_xticks(ind + width / 2)
-#   ax.set_xticklabels(('January', 'February', 'March', 'April', 'June', 'July', 'August', 'September', 'October', 'November', 'December'))
-#   ax.legend((p1[0], p2[0]), ('Employed', 'Unemployed'))
-#   ax.autoscale_view()
-#
-#   ax.set(xlabel='Months', ylabel='Number of People',
-#            title="Number of People Employed vs. Unemployed in 2018 by Month")
-#
-#   ax.grid()
-#   fig.savefig("Employvunemploy.png")
-#   plt.show()
-
-# def join():
-#     cur.execute('SELECT EMPLOYMENT.year FROM EMPLOYMENT LEFT JOIN UNEMPLOYED ON EMPLOYMENT.year = UNEMPLOYED.year')
-#     conn.commit()
+    cur.execute('SELECT Employment.employment, Unemployed.unemployed, Unemployed.month FROM Employment LEFT JOIN Unemployed on Employment.month = Unemployed.month WHERE Employment.year = 2013')
+    for row in cur:
+        employment = row[0]
+        unemployed = row[1]
+        month = row[2]
+        if month not in dictionary_of_emp_unemp.keys():
+            dictionary_of_emp_unemp[month] = (employment, unemployed)
+    job_tup_list = []
+    for item in dictionary_of_emp_unemp.keys():
+        job_tup_list.append(tuple([item,dictionary_of_emp_unemp[item]]))
+    sorted_job_list = sorted(job_tup_list, reverse = True)
+    print(sorted_job_list)
+    conn.commit()
+    emp_list = []
+    unemp_list = []
+    for item in sorted_job_list:
+        emp_list.append(item[1][0])
+        unemp_list.append(item[1][1])
+    fig, ax = plt.subplots()
+    N = 12
+    width = 0.35
+    ind = np.arange(N)
+    p1 = ax.bar(ind, emp_list, width, color='blue')
+    p2 = ax.bar(ind + width, unemp_list, width, color='yellow')
+    ax.set_xticks(ind + width / 2)
+    ax.set_xticklabels(('January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', "December"))
+    ax.legend((p1[0], p2[0]), ('Employed', 'Unemployed'))
+    ax.autoscale_view()
+    ax.set(xlabel='Month', ylabel='Number of Americans',
+           title='Number of Americans Employed and Unemployed in 2013')
+    fig.savefig("job.png")
+    plt.show()
 
 def commit():
     conn.commit()
 
 def main():
-    # CO2 emission in the US in 2014 (tons per capita)
     calc(cur,conn,'calc.txt')
     visualize_state(get_state_dict())
-    #join()
-    #insert_states(state_data)
-    #insert_counties(county_data)
-    #insert_employment(employ_data)
-    #insert_unemployed(unemployed_data)
+    job()
     commit()
 
 
