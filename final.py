@@ -127,7 +127,7 @@ def call():
         insert_counties(start_pos, end_pos)
         start_pos += 13
         end_pos += 13
-call()
+#call()
 
 def calc(cur, conn,filename):
     population_sum = 0
@@ -240,14 +240,14 @@ def job():
     job_tup_list = []
     for item in dictionary_of_emp_unemp.keys():
         job_tup_list.append(tuple([item,dictionary_of_emp_unemp[item]]))
-    sorted_job_list = sorted(job_tup_list, reverse = True)
-    print(sorted_job_list)
     conn.commit()
     emp_list = []
     unemp_list = []
-    for item in sorted_job_list:
+    month_list = []
+    for item in job_tup_list:
         emp_list.append(item[1][0])
         unemp_list.append(item[1][1])
+        month_list.append(item[0])
     fig, ax = plt.subplots()
     N = 12
     width = 0.35
@@ -255,7 +255,7 @@ def job():
     p1 = ax.bar(ind, emp_list, width, color='blue')
     p2 = ax.bar(ind + width, unemp_list, width, color='yellow')
     ax.set_xticks(ind + width / 2)
-    ax.set_xticklabels(('January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', "December"))
+    ax.set_xticklabels(month_list)
     ax.legend((p1[0], p2[0]), ('Employed', 'Unemployed'))
     ax.autoscale_view()
     ax.set(xlabel='Month', ylabel='Number of Americans',
