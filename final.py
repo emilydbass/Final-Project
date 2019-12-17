@@ -208,7 +208,12 @@ def visualize_state(state_dict):
     return sorted_tup_list
 
 
-def job():
+def get_job_dict():
+    try:
+        conn = sqlite3.connect('final.sqlite')
+    except:
+        print("Error")
+    """   
     dictionary_of_employ = {}
     cur.execute('SELECT employment, month FROM EMPLOYMENT WHERE year = 2013')
     for row in cur:
@@ -217,6 +222,7 @@ def job():
         if month not in dictionary_of_employ.keys():
             dictionary_of_employ[month] = employment
     dictionary_of_unemploy = {}
+<<<<<<< HEAD
     cur.execute('SELECT unemployed, month FROM UNEMPLOYED WHERE year = 2013')
     for row in cur:
         unemployed = row[0]
@@ -256,6 +262,58 @@ def job():
            title='Number of Americans Employed and Unemployed in 2013')
     fig.savefig("job.png")
     plt.show()
+=======
+#   cur.execute('SELECT unemployed, month FROM UNEMPLOYED WHERE year = 2018')
+#   for row in cur:
+#       unemployed = row[0]
+#       month = row[1]
+#       if month not in dictionary_of_unemploy.keys():
+#           dictionary_of_unemploy[month] = unemployed
+#   """
+    cur = conn.cursor()
+    dictionary_of_emp_unemp = {}
+
+#   cur.execute('SELECT Employment.employment, Unemployed.unemployed, Unemployed.month FROM Employment LEFT JOIN Unemployed on Employment.month = Unemployed.month WHERE year = 2018')
+#   for row in cur:
+#       employment = row[0]
+#       unemployed = row[1]
+#       month = row[2]
+#       if month not in dictionary_of_emp_unemp.keys():
+#           dictionary_of_emp_unemp[month] = (employment, unemployed)
+#   conn.commit()
+#   return dictionary_of_emp_unemp
+
+def visualize_employ_unemploy(dictionary_of_emp_unemp):
+#   employment_list = []
+#   unemployment_list = []
+#
+#   for x in dictionary_of_emp_unemp:
+#       employment_list.append(x[1][0])
+#       unemployment_list.append(x[1][1])
+#
+#   fig, ax = plt.subplots()
+#   N = 12
+#   width = 0.35
+#   ind = np.arrange(N)
+#
+#   p1 = ax.bar(ind, employment_list, width, color="red")
+#   p2 = ax.bar(ind + width, unemployment_list, width, color='orange')
+#   ax.set_xticks(ind + width / 2)
+#   ax.set_xticklabels(('January', 'February', 'March', 'April', 'June', 'July', 'August', 'September', 'October', 'November', 'December'))
+#   ax.legend((p1[0], p2[0]), ('Employed', 'Unemployed'))
+#   ax.autoscale_view()
+#
+#   ax.set(xlabel='Months', ylabel='Number of People',
+#            title="Number of People Employed vs. Unemployed in 2018 by Month")
+#
+#   ax.grid()
+#   fig.savefig("Employvunemploy.png")
+#   plt.show()
+
+# def join():
+#     cur.execute('SELECT EMPLOYMENT.year FROM EMPLOYMENT LEFT JOIN UNEMPLOYED ON EMPLOYMENT.year = UNEMPLOYED.year')
+#     conn.commit()
+>>>>>>> 4ce919f49c57c8cfd690f32479df6d0f9a3b81f0
 
 def commit():
     conn.commit()
