@@ -140,19 +140,19 @@ def calc(cur, conn,filename):
     cur.execute('SELECT population FROM COUNTY')
     for row in cur:
         population_sum_county+= int(row[0])
-    average_pop_county = int((population_sum_county/100))
+    average_pop_county = int((population_sum_county/260))
 
     employment_sum = 0
     cur.execute('SELECT employment FROM EMPLOYMENT')
     for row in cur:
         employment_sum += int(row[0])
-    average_employment = int((employment_sum/40))
+    average_employment = int((employment_sum/130))
 
     unemployment_sum = 0
     cur.execute('SELECT unemployed FROM UNEMPLOYED')
     for row in cur:
         unemployment_sum += int(row[0])
-    average_unemployment = int((unemployment_sum/40))
+    average_unemployment = int((unemployment_sum/130))
 
 
     full_path = os.path.join(os.path.dirname(__file__), filename)
@@ -160,7 +160,7 @@ def calc(cur, conn,filename):
     file_obj.write('These are the calculations we did using our API data.'+'\n')
     file_obj.write('We found the populations of all the states in america from our State data table and took that total and divided it by 52. This is the average population of all 52 states in America: ')
     file_obj.write(str(average_pop) + '\n')
-    file_obj.write('We found the populations from the Counties data table and totaled it, then divided it by 100. This is the average population of 100 counties in America: ')
+    file_obj.write('We found the populations from the Counties data table and totaled it, then divided it by 260. This is the average population of 260 counties in America: ')
     file_obj.write(str(average_pop_county)+'\n')
     file_obj.write('We found the number of empoloyed Americans each month from our Employment data table, then averaged this. This is the average number of people who are reported as "employed" each month: ')
     file_obj.write(str(average_employment) + '\n')
