@@ -1,5 +1,5 @@
 These are the calculations we did using our API data.
-We found the populations of all the states in america from our State data table and took that total and divided it by 52. This is the average population of all 52 states in America: 75936081
-We found the populations from the Counties data table and totaled it, then divided it by 100. This is the average population of 100 counties in America: 7659306
-We found the number of empoloyed Americans each month from our Employment data table, then averaged this. This is the average number of people who are reported as "employed" each month: 2761607
-We found the number of unemployed Americans each month from our Unemployment data table, then found the average.This is the average number of people who are reported as "unemployed" each month: 252702
+We found the populations of all the states in america from our State data table and took that total and divided it by 52. This is the average population of all 52 states in America: 6328006
+We found the populations from the Counties data table and totaled it, then divided it by 100. This is the average population of 100 counties in America: 638275
+We found the number of empoloyed Americans each month from our Employment data table, then averaged this. This is the average number of people who are reported as "employed" each month: 230133
+We found the number of unemployed Americans each month from our Unemployment data table, then found the average.This is the average number of people who are reported as "unemployed" each month: 21058
